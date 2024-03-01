@@ -69,6 +69,11 @@ def get_args():
         default=100,
         help="Max no. of epochs to train the model on",
     )
+    parser.add_argument(
+        "--image_size",
+        type=int,
+        default=128,
+    )
     args = parser.parse_args()
     return args
 
