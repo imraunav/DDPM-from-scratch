@@ -4,6 +4,7 @@ from accelerate import Accelerator
 import argparse
 import os
 
+from ddpm import Diffusion
 from unet import UNet
 from utils import get_dataloader, save_checkpoint
 
