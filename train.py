@@ -15,7 +15,7 @@ SAVE_DIR = "./progress"
 
 def main(args):
     model = UNet().to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
     diffusion = Diffusion(img_size=args.image_size, device=device)
     crit = torch.nn.MSELoss().to(device)
     dataloader = get_dataloader(args)
