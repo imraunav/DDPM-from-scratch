@@ -15,12 +15,18 @@ SAVE_DIR = "./progress"
 
 
 def main(args):
+    print("Loading model...")
     model = UNet().to(device)
+    print("Model loaded!")
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
+    print("Building diffusion class...")
     diffusion = Diffusion(img_size=args.image_size, device=device)
+    print("Done!")
     crit = torch.nn.MSELoss().to(device)
+    print("Fetching dataloader...")
     dataloader = get_dataloader(args)
-
+    print("Done!")
+    
     n_updates = 0
     losses = []
     for epoch in range(args.max_epoch):
