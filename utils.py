@@ -1,20 +1,31 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
 import torchvision
+from PIL import Image
+
+
+def check_Image(path):
+    try:
+        im = Image.open(path)
+        return True
+    except:
+        return False
 
 
 def get_dataloader(args):
     transforms = torchvision.transforms.Compose(
         [
             torchvision.transforms.Resize(
-                (args.image_size*2, args.image_size*2), antialias=True
+                (args.image_size * 2, args.image_size * 2), antialias=True
             ),  # args.image_size + 1/4 *args.image_size
             torchvision.transforms.RandomCrop((args.image_size, args.image_size)),
             torchvision.transforms.ToTensor(),
             torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ]
     )
-    dataset = torchvision.datasets.ImageFolder(args.dataset_path, transform=transforms)
+    dataset = torchvision.datasets.ImageFolder(
+        args.dataset_path, transform=transforms, is_valid_file=check_Image
+    )
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
     return dataloader
 
