@@ -31,9 +31,12 @@ def main(args):
     n_updates = 0
     losses = []
     scaler = torch.cuda.amp.GradScaler()
-    for epoch in range(args.max_epoch):
-        print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
-        running_loss = 0
+    updates = 0
+    # for epoch in range(args.max_epoch):
+    while updates < args.max_updates:
+        # print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
+        print(f"Update {updates}/{args.max_updates} : ", end="")
+        # running_loss = 0
         pbar = tqdm(dataloader)
         for images, labels in pbar:
             model.train()
@@ -50,18 +53,27 @@ def main(args):
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
-            running_loss += loss.item()
+            updates += 1
+
+            # running_loss += loss.item()
             pbar.set_postfix(loss=loss.item())
 
-        lossess.append(running_loss / len(dataloader))
-        print(f"Loss = {losses[-1]}")
-        if epoch % 50 == 0:
-            sample_images = diffusion.sample(model, n=args.batch_size)
-            os.makedirs(SAVE_DIR, exist_ok=True)
-            save_image(sample_images, os.path.join(SAVE_DIR, f"epoch_{epoch}.jpg"))
-            save_checkpoint(
-                model.state_dict(), optimizer.state_dict(), epoch + 1, losses
-            )
+        # lossess.append(running_loss / len(dataloader))
+        # print(f"Loss = {losses[-1]}")
+            # if epoch % 50 == 0:
+            if updates % 50 == 0:
+                sample_images = diffusion.sample(model, n=args.batch_size)
+                os.makedirs(SAVE_DIR, exist_ok=True)
+                # save_image(sample_images, os.path.join(SAVE_DIR, f"epoch_{epoch}.jpg"))
+                save_image(
+                    sample_images, os.path.join(SAVE_DIR, f"updates_{updates}.jpg")
+                )
+
+                save_checkpoint(
+                    model.state_dict(),
+                    optimizer.state_dict(),
+                    # epoch + 1,
+                )
 
 
 def get_args():
@@ -78,11 +90,17 @@ def get_args():
     parser.add_argument(
         "--learning_rate", type=float, default=1e-3, help="Learning rate"
     )
+    # parser.add_argument(
+    #     "--max_epoch",
+    #     type=None,
+    #     default=None,
+    #     help="Max no. of epochs to train the model on",
+    # )
     parser.add_argument(
-        "--max_epoch",
-        type=int,
+        "--max_updates",
+        type=None,
         default=100,
-        help="Max no. of epochs to train the model on",
+        help="Max amount of updates to apply to the model",
     )
     parser.add_argument(
         "--image_size",
