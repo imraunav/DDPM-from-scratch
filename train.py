@@ -30,24 +30,29 @@ def main(args):
 
     n_updates = 0
     losses = []
+    scaler = torch.cuda.amp.GradScaler()
     for epoch in range(args.max_epoch):
         print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
         running_loss = 0
-        for images, labels in tqdm(dataloader):
+        pbar = tqdm(dataloader)
+        for images, labels in pbar:
             model.train()
             images = images.to(device)
-            # with torch.cuda.amp.autocast(enabled=True, dtype=torch.float16):
-            t = diffusion.sample_timesteps(images.size(0)).to(
-                device
-            )  # last batch can be uneven
-            x_t, noise = diffusion.noise_image(images, t)
-            predicted_noise = model(x_t, t)
-            loss = crit(predicted_noise, noise)
+            with torch.cuda.amp.autocast(enabled=True, dtype=torch.float16):
+                t = diffusion.sample_timesteps(images.size(0)).to(
+                    device
+                )  # last batch can be uneven
+                x_t, noise = diffusion.noise_image(images, t)
+                predicted_noise = model(x_t, t)
+                loss = crit(predicted_noise, noise)
 
             optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
             running_loss += loss.item()
+            pbar.set_postfix(loss=loss.item())
+
         lossess.append(running_loss / len(dataloader))
         print(f"Loss = {losses[-1]}")
         if epoch % 50 == 0:
