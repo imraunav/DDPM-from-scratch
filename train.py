@@ -98,7 +98,7 @@ def get_args():
     # )
     parser.add_argument(
         "--max_updates",
-        type=None,
+        type=int,
         default=100,
         help="Max amount of updates to apply to the model",
     )
