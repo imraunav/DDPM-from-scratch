@@ -118,7 +118,7 @@ class UNet(nn.Module):
     def pos_encoding(self, t, channels):
         inv_freq = 1.0 / (
             10000
-            ** (torch.arange(0, channels, 2).float() / channels)
+            ** (torch.arange(0, channels, 2, device=t.device).float() / channels)
         )
         pos_enc_a = torch.sin(t.repeat(1, channels // 2) * inv_freq)
         pos_enc_b = torch.cos(t.repeat(1, channels // 2) * inv_freq)
@@ -127,7 +127,7 @@ class UNet(nn.Module):
 
     def forward(self, x, t):
         t = t.unsqueeze(-1).type(torch.float)
-        t = self.pos_encoding(t, self.time_dim).to(x.device)
+        t = self.pos_encoding(t, self.time_dim)
 
         x1 = self.inc(x)
         x2 = self.down1(x1, t)
