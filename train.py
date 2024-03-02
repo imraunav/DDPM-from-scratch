@@ -36,13 +36,13 @@ def main(args):
         for images, labels in tqdm(dataloader):
             model.train()
             images = images.to(device)
-            with torch.cuda.amp.autocast(enabled=True, dtype=torch.float16):
-                t = diffusion.sample_timesteps(images.size(0)).to(
-                    device
-                )  # last batch can be uneven
-                x_t, noise = diffusion.noise_image(images, t)
-                predicted_noise = model(x_t, t)
-                loss = crit(predicted_noise, noise)
+            # with torch.cuda.amp.autocast(enabled=True, dtype=torch.float16):
+            t = diffusion.sample_timesteps(images.size(0)).to(
+                device
+            )  # last batch can be uneven
+            x_t, noise = diffusion.noise_image(images, t)
+            predicted_noise = model(x_t, t)
+            loss = crit(predicted_noise, noise)
 
             optimizer.zero_grad()
             loss.backward()
