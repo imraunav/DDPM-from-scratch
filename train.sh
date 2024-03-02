@@ -5,4 +5,4 @@ CUDA_VISIBLE_DEVICES=5 python -u train.py \
 --learning_rate 0.0003 \
 --dataset_path /storage/raunav/imagenet/ILSVRC/Data/CLS-LOC/train \
 --max_updates 1000000  \
---img_size 128
+--image_size 128
