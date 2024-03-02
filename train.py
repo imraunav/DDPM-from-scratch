@@ -36,7 +36,7 @@ def main(args):
             model.train()
             images = images.to(device)
             t = diffusion.sample_timesteps(args.batch_size).to(device)
-            x_t, noise = diffusion.noise_images(images, t)
+            x_t, noise = diffusion.noise_image(images, t)
             predicted_noise = model(x_t, t)
             loss = crit(predicted_noise, noise)
 
