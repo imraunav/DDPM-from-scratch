@@ -26,7 +26,7 @@ def main(args):
     print("Fetching dataloader...")
     dataloader = get_dataloader(args)
     print("Done!")
-    
+
     n_updates = 0
     losses = []
     for epoch in range(args.max_epoch):
@@ -35,7 +35,9 @@ def main(args):
         for images, labels in dataloader:
             model.train()
             images = images.to(device)
-            t = diffusion.sample_timesteps(args.batch_size).to(device)
+            t = diffusion.sample_timesteps(images.size(0)).to(
+                device
+            )  # last batch can be uneven
             x_t, noise = diffusion.noise_image(images, t)
             predicted_noise = model(x_t, t)
             loss = crit(predicted_noise, noise)

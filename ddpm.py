@@ -15,7 +15,7 @@ class Diffusion:
         self.noise_step = noise_step
         self.beta_start = beta_start
         self.beta_end = beta_end
-        self.img_size = 256
+        self.img_size = img_size
         self.device = device
 
         self.beta = self.prepare_noise_schedule().to(device)
@@ -23,14 +23,19 @@ class Diffusion:
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
     def prepare_noise_schedule(self):
-        return torch.linspace(self.beta_start, self.beta_end, self.noise_step)
+        return torch.linspace(
+            start=self.beta_start,
+            end=self.beta_end,
+            steps=self.noise_step,
+            device=self.device,
+        )
 
     def noise_image(self, x, t):
         sqrt_alpha_hat = torch.sqrt(self.alpha_hat[t])[:, None, None, None]
         sqrt_one_minus_alpha_hat = torch.sqrt(1 - self.alpha_hat[t])[
             :, None, None, None
         ]
-        noise = torch.randn_like(x, device=x.device)
+        noise = torch.randn_like(x, device=self.device)
         return sqrt_alpha_hat * x + sqrt_one_minus_alpha_hat * noise, noise
 
     def sample_timesteps(self, n):
@@ -61,3 +66,12 @@ class Diffusion:
         x = (x.clamp(-1, 1) + 1) / 2
         x = (x * 255).to(torch.uint8)
         return x
+
+if __name__ == "__main__":
+    batch_size = 32
+    diffusion = Diffusion(img_size=64, device="cpu")
+    x = torch.randn((batch_size, 3, 64, 64))
+    t = diffusion.sample_timesteps(batch_size)
+    print(t.shape)
+    x_t, noise = diffusion.noise_image(x, t)
+    print(x_t.shape, noise.shape)
