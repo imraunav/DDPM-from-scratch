@@ -149,3 +149,11 @@ class UNet(nn.Module):
         x = self.sa6(x)
         output = self.outc(x)
         return output
+
+if __name__ == '__main__':
+    net = UNet()
+    # net = UNet_conditional(num_classes=10, device="cpu")
+    print(sum([p.numel() for p in net.parameters()]))
+    x = torch.randn(3, 3, 64, 64)
+    t = x.new_tensor([500] * x.shape[0]).long()
+    print(net(x, t).shape)

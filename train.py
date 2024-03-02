@@ -78,7 +78,7 @@ def get_args():
     parser.add_argument(
         "--image_size",
         type=int,
-        default=128,
+        default=64,
     )
     args = parser.parse_args()
     return args
