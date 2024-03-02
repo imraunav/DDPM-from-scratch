@@ -34,7 +34,7 @@ def main(args):
         running_loss = 0
         for images, labels in dataloader:
             model.train()
-            images = images.to(data)
+            images = images.to(device)
             t = diffusion.sample_timesteps(args.batch_size).to(device)
             x_t, noise = diffusion.noise_images(images, t)
             predicted_noise = model(x_t, t)
