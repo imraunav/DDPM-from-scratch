@@ -3,6 +3,7 @@ from torchvision.utils import save_image
 from accelerate import Accelerator
 import argparse
 import os
+from tqdm import tqdm
 
 from ddpm import Diffusion
 from unet import UNet
@@ -32,7 +33,7 @@ def main(args):
     for epoch in range(args.max_epoch):
         print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
         running_loss = 0
-        for images, labels in dataloader:
+        for images, labels in tqdm(dataloader):
             model.train()
             images = images.to(device)
             t = diffusion.sample_timesteps(images.size(0)).to(
