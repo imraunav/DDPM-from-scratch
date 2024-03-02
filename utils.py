@@ -23,9 +23,7 @@ def get_dataloader(args):
             torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ]
     )
-    dataset = torchvision.datasets.ImageFolder(
-        args.dataset_path, transform=transforms, is_valid_file=check_Image
-    )
+    dataset = torchvision.datasets.ImageFolder(args.dataset_path, transform=transforms)
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
     return dataloader
 
