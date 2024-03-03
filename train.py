@@ -61,7 +61,7 @@ def main(args):
         # lossess.append(running_loss / len(dataloader))
         # print(f"Loss = {losses[-1]}")
             # if epoch % 50 == 0:
-            if updates % 50 == 0:
+            if updates % 500 == 0:
                 sample_images = diffusion.sample(model, n=args.batch_size)
                 os.makedirs(SAVE_DIR, exist_ok=True)
                 # save_image(sample_images, os.path.join(SAVE_DIR, f"epoch_{epoch}.jpg"))

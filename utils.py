@@ -16,9 +16,9 @@ def get_dataloader(args):
     transforms = torchvision.transforms.Compose(
         [
             torchvision.transforms.Resize(
-                (args.image_size * 2, args.image_size * 2), antialias=True
+                (args.image_size, args.image_size), antialias=True
             ),  # args.image_size + 1/4 *args.image_size
-            torchvision.transforms.RandomCrop((args.image_size, args.image_size)),
+            # torchvision.transforms.RandomCrop((args.image_size, args.image_size)),
             torchvision.transforms.ToTensor(),
             torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ]
