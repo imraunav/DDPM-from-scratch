@@ -30,7 +30,7 @@ def main(args):
 
     n_updates = 0
     losses = []
-    scaler = torch.cuda.amp.GradScaler()
+    # scaler = torch.cuda.amp.GradScaler()
     updates = 0
     # for epoch in range(args.max_epoch):
     while updates < args.max_updates:
@@ -41,18 +41,16 @@ def main(args):
         for images, labels in pbar:
             model.train()
             images = images.to(device)
-            with torch.cuda.amp.autocast(enabled=True, dtype=torch.float16):
-                t = diffusion.sample_timesteps(images.size(0)).to(
-                    device
-                )  # last batch can be uneven
-                x_t, noise = diffusion.noise_image(images, t)
-                predicted_noise = model(x_t, t)
-                loss = crit(predicted_noise, noise)
+            t = diffusion.sample_timesteps(images.size(0)).to(
+                device
+            )  # last batch can be uneven
+            x_t, noise = diffusion.noise_image(images, t)
+            predicted_noise = model(x_t, t)
+            loss = crit(predicted_noise, noise)
 
             optimizer.zero_grad()
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
+            loss.backward()
+            optimizer.step()
             updates += 1
 
             # running_loss += loss.item()
