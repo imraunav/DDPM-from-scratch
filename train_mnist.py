@@ -77,11 +77,11 @@ def main(args):
             updates += 1
 
             # running_loss += loss.item()
-            pbar.set_postfix(loss=loss.item())
+            # pbar.set_postfix(loss=loss.item())
 
             # lossess.append(running_loss / len(dataloader))
             # print(f"Loss = {losses[-1]}")
-            if epoch % 50 == 0:
+            if epoch % 10 == 0:
                 sample_images = diffusion.sample(model, n=64)
                 os.makedirs(SAVE_DIR, exist_ok=True)
                 save_image(
