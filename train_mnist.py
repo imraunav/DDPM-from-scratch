@@ -52,6 +52,7 @@ def main(args):
     print("Done!")
 
     losses = []
+    updates = 0
     for epoch in range(args.max_epoch):
         # print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
         pbar = tqdm(dataloader, desc=f"Epoch {epoch}/{args.max_epoch} : ")
