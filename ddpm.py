@@ -11,12 +11,14 @@ class Diffusion:
         beta_end=0.02,
         img_size=256,
         device="cuda",
+        channel=3,
     ):
         self.noise_step = noise_step
         self.beta_start = beta_start
         self.beta_end = beta_end
         self.img_size = img_size
         self.device = device
+        self.channel = channel
 
         self.beta = self.prepare_noise_schedule().to(device)
         self.alpha = 1 - self.beta
@@ -47,7 +49,9 @@ class Diffusion:
         if img_size is None:
             img_size = self.img_size
         model.eval()
-        x = torch.randn((n, 3, img_size, img_size), device=self.device)  # [N, C, H, W]
+        x = torch.randn(
+            (n, self.channel, img_size, img_size), device=self.device
+        )  # [N, C, H, W]
         for i in reversed(range(1, self.noise_step)):
             t = torch.tensor([i] * n, dtype=torch.long).to(self.device)
             predicted_noise = model(x, t)
@@ -67,6 +71,7 @@ class Diffusion:
         x = (x.clamp(-1, 1) + 1) / 2
         # x = (x * 255).to(torch.uint8)
         return x
+
 
 if __name__ == "__main__":
     batch_size = 32
