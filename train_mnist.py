@@ -103,8 +103,8 @@ def get_args():
     )
     parser.add_argument(
         "--max_epoch",
-        type=None,
-        default=None,
+        type=int,
+        default=1,
         help="Max no. of epochs to train the model on",
     )
     parser.add_argument(
