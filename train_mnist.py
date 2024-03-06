@@ -3,6 +3,8 @@ from torchvision.utils import save_image
 import argparse
 import os
 from tqdm import tqdm
+from torchvision.datasets import MNIST
+from torchvision import transforms
 
 from ddpm import Diffusion
 from nn import UNetModel
