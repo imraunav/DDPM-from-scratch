@@ -42,12 +42,13 @@ class Diffusion:
         return torch.randint(low=1, high=self.noise_step, size=(n,))
 
     @torch.no_grad()
-    def sample(self, model, n, img_size=None):
+    def sample(self, model, n, img_size=None, y=None):
+
         if img_size is None:
             img_size = self.img_size
         model.eval()
         x = torch.randn((n, 3, img_size, img_size), device=self.device)  # [N, C, H, W]
-        for i in tqdm(reversed(range(1, self.noise_step)), position=0):
+        for i in reversed(range(1, self.noise_step)):
             t = torch.tensor([i] * n, dtype=torch.long).to(self.device)
             predicted_noise = model(x, t)
             alpha = self.alpha[t][:, None, None, None]
