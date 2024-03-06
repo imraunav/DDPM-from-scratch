@@ -10,7 +10,7 @@ from utils import save_checkpoint
 
 device = torch.device("cuda")
 
-SAVE_DIR = "./progress"
+SAVE_DIR = "./progress_mnist"
 
 
 def main(args):
@@ -41,7 +41,7 @@ def main(args):
         ]
     )
     train_ds = MNIST("./MNIST", download=True, train=True, transform=transform)
-    test_ds = MNIST("./MNIST/", download=False, train=False, transform=transform)
+    test_ds = MNIST("./MNIST", download=False, train=False, transform=transform)
 
     mnist_ds = ConcatDataset([train_ds, test_ds])
     dataloader = DataLoader(mnist_ds, batch_size=args.batch_size, shuffle=True)
@@ -82,6 +82,7 @@ def main(args):
                     model.state_dict(),
                     optimizer.state_dict(),
                     # epoch + 1,
+                    filename="checkpoint_mnist.pt"
                 )
 
 
