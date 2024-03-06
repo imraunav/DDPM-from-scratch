@@ -32,7 +32,7 @@ def main(args):
     print("Model loaded!")
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
     print("Building diffusion class...")
-    diffusion = Diffusion(img_size=args.image_size, channel=args.in_channel, device=device)
+    diffusion = Diffusion(img_size=args.image_size, channel=args.in_channels, device=device)
     print("Done!")
     crit = torch.nn.MSELoss().to(device)
     print("Fetching dataloader...")
