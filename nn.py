@@ -238,11 +238,11 @@ class UNetModel(nn.Module):
 
     def forward(self, x, timesteps, y=None):
         assert (y is not None) == (
-            self.num_classes is not None
+            self.n_classes is not None
         ), "must specify y if and only if the model is class-conditional"
         emb = self.time_emb(timesteps)
 
-        if self.num_classes is not None:
+        if self.n_classes is not None:
             assert y.shape == (x.shape[0],)
             emb = emb + self.label_emb(y)
 
