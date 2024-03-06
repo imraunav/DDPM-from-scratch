@@ -119,7 +119,7 @@ def get_args():
         default=8,
     )
     parser.add_argument(
-        "--n_resblock",
+        "--n_resblocks",
         type=int,
         default=1,
     )
