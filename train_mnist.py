@@ -5,6 +5,8 @@ import os
 from tqdm import tqdm
 from torchvision.datasets import MNIST
 from torchvision import transforms
+from torch.utils.data import Dataset, DataLoader, ConcatDataset
+
 
 from ddpm import Diffusion
 from nn import UNetModel
@@ -84,7 +86,7 @@ def main(args):
                     model.state_dict(),
                     optimizer.state_dict(),
                     # epoch + 1,
-                    filename="checkpoint_mnist.pt"
+                    filename="checkpoint_mnist.pt",
                 )
 
 
