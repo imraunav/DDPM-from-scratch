@@ -53,6 +53,7 @@ def main(args):
 
     losses = []
     updates = 0
+    scaler = torch.cuda.amp.GradScaler()
     for epoch in range(args.max_epoch):
         # print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
         pbar = tqdm(dataloader, desc=f"Epoch {epoch}/{args.max_epoch} : ")
@@ -63,12 +64,16 @@ def main(args):
                 device
             )  # last batch can be uneven
             x_t, noise = diffusion.noise_image(images, t)
-            predicted_noise = model(x_t, t)
-            loss = crit(predicted_noise, noise)
+            with torch.cuda.amp.autocast(enabled=True, dtype=torch.float16):
+                predicted_noise = model(x_t, t)
+                loss = crit(predicted_noise, noise)
 
             optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            # loss.backward()
+            # optimizer.step()
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
             updates += 1
 
             # running_loss += loss.item()
@@ -121,7 +126,7 @@ def get_args():
     parser.add_argument(
         "--model_channel",
         type=int,
-        default=8,
+        default=4,
     )
     parser.add_argument(
         "--n_resblocks",
@@ -131,7 +136,7 @@ def get_args():
     parser.add_argument(
         "--n_heads",
         type=int,
-        default=4,
+        default=2,
     )
     parser.add_argument(
         "--groups",
