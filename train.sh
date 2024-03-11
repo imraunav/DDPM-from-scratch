@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CUDA_VISIBLE_DEVICES=5 python -u train.py \
+CUDA_VISIBLE_DEVICES=1 python -u train.py \
 --batch_size 16 \
 --learning_rate 0.0003 \
 --image_size 256
