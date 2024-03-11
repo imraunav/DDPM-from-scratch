@@ -12,7 +12,7 @@ from utils import get_dataloader, save_checkpoint
 accelerator = Accelerator()
 device = torch.device("cuda")
 
-SAVE_DIR = "./progress"
+SAVE_DIR = "./progress_celeb"
 
 
 def main(args):
@@ -30,14 +30,11 @@ def main(args):
 
     n_updates = 0
     losses = []
-    # scaler = torch.cuda.amp.GradScaler()
     updates = 0
-    # for epoch in range(args.max_epoch):
-    while updates < args.max_updates:
+    scaler = torch.cuda.amp.GradScaler()
+    for epoch in range(args.max_epoch):
         # print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
-        print(f"Update {updates}/{args.max_updates} : ", end="")
-        # running_loss = 0
-        pbar = tqdm(dataloader)
+        pbar = tqdm(dataloader, desc=f"Epoch {epoch}/{args.max_epoch} : ")
         for images, labels in pbar:
             model.train()
             images = images.to(device)
@@ -45,33 +42,37 @@ def main(args):
                 device
             )  # last batch can be uneven
             x_t, noise = diffusion.noise_image(images, t)
-            predicted_noise = model(x_t, t)
-            loss = crit(predicted_noise, noise)
+            with torch.cuda.amp.autocast(enabled=True, dtype=torch.float16):
+                predicted_noise = model(x_t, t)
+                loss = crit(predicted_noise, noise)
 
             optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            # loss.backward()
+            # optimizer.step()
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
             updates += 1
 
             # running_loss += loss.item()
-            pbar.set_postfix(loss=loss.item())
+            # pbar.set_postfix(loss=loss.item())
 
-        # lossess.append(running_loss / len(dataloader))
-        # print(f"Loss = {losses[-1]}")
-            # if epoch % 50 == 0:
-            if updates % 500 == 0:
-                sample_images = diffusion.sample(model, n=args.batch_size)
-                os.makedirs(SAVE_DIR, exist_ok=True)
-                # save_image(sample_images, os.path.join(SAVE_DIR, f"epoch_{epoch}.jpg"))
-                save_image(
-                    sample_images, os.path.join(SAVE_DIR, f"updates_{updates}.jpg")
-                )
+            # lossess.append(running_loss / len(dataloader))
+            # print(f"Loss = {losses[-1]}")
+        if epoch % 10 == 0:
+            print("Checkpoint reached")
+            sample_images = diffusion.sample(model, n=64)
+            os.makedirs(SAVE_DIR, exist_ok=True)
+            save_image(
+                sample_images, os.path.join(SAVE_DIR, f"updates_{updates}.jpg")
+            )
 
-                save_checkpoint(
-                    model.state_dict(),
-                    optimizer.state_dict(),
-                    # epoch + 1,
-                )
+            save_checkpoint(
+                model.state_dict(),
+                optimizer.state_dict(),
+                # epoch + 1,
+                filename="checkpoint_celeb.pt",
+            )
 
 
 def get_args():
