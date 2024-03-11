@@ -13,7 +13,7 @@ class Block(nn.Module):
         super().__init__()
         self.block = nn.Sequential(
             nn.GroupNorm(groups, in_channels),
-            nn.SiLU(inplace=True),
+            nn.SiLU(),
             nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
             nn.Dropout(dropout),
         )
@@ -54,7 +54,7 @@ class ResBlock(TimeEmbeddedBlock):
         self.updown = up or down
 
         self.mlp = nn.Sequential(
-            nn.SiLU(inplace=True),
+            nn.SiLU(),
             nn.Linear(time_emb_dim, out_channels),
         )
 
@@ -159,14 +159,14 @@ class UNetModel(nn.Module):
         if n_classes is not None:
             self.class_emb = nn.Sequential(
                 nn.Embedding(n_classes, time_emb_dim),
-                nn.SiLU(inplace=True),
+                nn.SiLU(),
                 nn.Linear(time_emb_dim, time_emb_dim),
             )
 
         time_emb_dim = model_channel
         self.time_emb = nn.Sequential(
             nn.Embedding(noise_steps, time_emb_dim),
-            nn.SiLU(inplace=True),
+            nn.SiLU(),
             nn.Linear(time_emb_dim, time_emb_dim),
         )
 
