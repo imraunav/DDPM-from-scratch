@@ -6,7 +6,8 @@ import os
 from tqdm import tqdm
 
 from ddpm import Diffusion
-from unet import UNet
+# from unet import UNet
+from nn import UNetModel
 from utils import get_dataloader, save_checkpoint
 
 accelerator = Accelerator()
@@ -17,7 +18,8 @@ SAVE_DIR = "./progress_celeb"
 
 def main(args):
     print("Loading model...")
-    model = UNet()
+    # model = UNet()
+    model = UNetModel(3, 32, 3, 3, 4, 32, 0.3)
     model.half()
     model.to(device)
     print("Model loaded!")
