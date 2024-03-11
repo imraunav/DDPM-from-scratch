@@ -29,7 +29,7 @@ def main(args):
         groups=16,
         dropout=0.3,
     )
-    model.half()
+    # model.half()
     model.to(device)
     print("Model loaded!")
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
@@ -50,7 +50,7 @@ def main(args):
         pbar = tqdm(dataloader, desc=f"Epoch {epoch}/{args.max_epoch} : ")
         for images, labels in pbar:
             model.train()
-            images = images.to(torch.half)
+            # images = images.to(torch.half)
             images = images.to(device)
             t = diffusion.sample_timesteps(images.size(0)).to(
                 device
