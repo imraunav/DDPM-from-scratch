@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import torchvision
 from PIL import Image
+from glob import glob
 
 
 def check_Image(path):
@@ -10,6 +11,23 @@ def check_Image(path):
         return True
     except:
         return False
+
+
+class CelebDataset(Dataset):
+    def __init__(self, path, transforms=None):
+        self.path = path
+        self.imgs_paths = glob(os.path.join(path, "*.jpg"))
+        self.len = len(self.imgs_paths)
+        self.transforms = transforms
+
+    def __len__(self):
+        return self.len
+
+    def __getitem__(self, index):
+        img = Image.open(self.imgs_paths[index])
+        if self.transforms is not None:
+            img = self.transforms(img)
+        return img, None  # None is the dummy class not using
 
 
 def get_dataloader(args):
@@ -23,7 +41,8 @@ def get_dataloader(args):
             torchvision.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ]
     )
-    dataset = torchvision.datasets.ImageFolder(args.dataset_path, transform=transforms)
+    # dataset = torchvision.datasets.ImageFolder(args.dataset_path, transform=transforms)
+    dataset = CelebDataset(args.dataset_path, transforms)
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
     return dataloader
 
