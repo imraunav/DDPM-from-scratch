@@ -149,7 +149,7 @@ class UNetModel(nn.Module):
         dropout,
         n_classes=None,
         noise_steps=1000,
-        attention_res=(16),
+        attention_res=(16,),
         channel_mult=(1, 2, 4, 8),
     ):
         super().__init__()
