@@ -27,7 +27,7 @@ class CelebDataset(Dataset):
         img = Image.open(self.imgs_paths[index])
         if self.transforms is not None:
             img = self.transforms(img)
-        return img, None  # None is the dummy class not using
+        return img, -1  # None is the dummy class not using
 
 
 def get_dataloader(args):
