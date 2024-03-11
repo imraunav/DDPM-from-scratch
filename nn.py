@@ -149,6 +149,7 @@ class UNetModel(nn.Module):
         dropout,
         n_classes=None,
         noise_steps=1000,
+        attention_res=(16),
         channel_mult=(1, 2, 4, 8),
     ):
         super().__init__()
@@ -175,7 +176,7 @@ class UNetModel(nn.Module):
 
         # Init conv
         self.in_blocks = nn.ModuleList([])
-
+        img_res = 256
         for level, mult in enumerate(channel_mult):
             for i in range(n_resblocks):
                 layers = [
@@ -184,7 +185,8 @@ class UNetModel(nn.Module):
                     )
                 ]
                 ch = int(model_channel * mult)
-                layers.append(AttentionBlock(ch, n_heads, groups))
+                if img_res in attention_res:
+                    layers.append(AttentionBlock(ch, n_heads, groups))
                 self.in_blocks.append(TimeEmbeddedSequential(*layers))
                 skip_channels.append(ch)
 
@@ -198,6 +200,7 @@ class UNetModel(nn.Module):
                     dropout,
                     down=True,
                 )
+                img_res //= 2
                 ch = int(model_channel * mult)
                 self.in_blocks.append(layers)
                 skip_channels.append(ch)
@@ -224,13 +227,15 @@ class UNetModel(nn.Module):
                     )
                 ]
                 ch = int(model_channel * mult)
-                layers.append(AttentionBlock(ch, n_heads, groups))
+                if img_res in attention_res:
+                    layers.append(AttentionBlock(ch, n_heads, groups))
 
                 if level and i == n_resblocks:
                     out_ch = ch
                     layers.append(
                         ResBlock(ch, out_ch, time_emb_dim, groups, dropout, up=True)
                     )
+                    img_res = int(img_res * 2)
                     ch = int(model_channel * mult)
                 self.out_blocks.append(TimeEmbeddedSequential(*layers))
 
