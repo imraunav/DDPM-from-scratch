@@ -17,7 +17,9 @@ SAVE_DIR = "./progress_celeb"
 
 def main(args):
     print("Loading model...")
-    model = UNet().to(device)
+    model = UNet()
+    model.half()
+    model.to(device)
     print("Model loaded!")
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
     print("Building diffusion class...")
@@ -37,6 +39,7 @@ def main(args):
         pbar = tqdm(dataloader, desc=f"Epoch {epoch}/{args.max_epoch} : ")
         for images, labels in pbar:
             model.train()
+            images = images.to(torch.half)
             images = images.to(device)
             t = diffusion.sample_timesteps(images.size(0)).to(
                 device
@@ -89,18 +92,18 @@ def get_args():
     parser.add_argument(
         "--learning_rate", type=float, default=1e-3, help="Learning rate"
     )
-    # parser.add_argument(
-    #     "--max_epoch",
-    #     type=None,
-    #     default=None,
-    #     help="Max no. of epochs to train the model on",
-    # )
     parser.add_argument(
-        "--max_updates",
-        type=int,
-        default=100,
-        help="Max amount of updates to apply to the model",
+        "--max_epoch",
+        type=None,
+        default=None,
+        help="Max no. of epochs to train the model on",
     )
+    # parser.add_argument(
+    #     "--max_updates",
+    #     type=int,
+    #     default=100,
+    #     help="Max amount of updates to apply to the model",
+    # )
     parser.add_argument(
         "--image_size",
         type=int,

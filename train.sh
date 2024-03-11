@@ -5,4 +5,4 @@ CUDA_VISIBLE_DEVICES=1 python -u train.py \
 --learning_rate 0.0003 \
 --image_size 256 \
 --dataset_path /storage/public_datasets/celeba_hq/CelebAMask-HQ/CelebA-HQ-img/ \
---max_updates 100000  \
+--max_epoch 1000  \
