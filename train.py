@@ -6,6 +6,7 @@ import os
 from tqdm import tqdm
 
 from ddpm import Diffusion
+
 # from unet import UNet
 from nn import UNetModel
 from utils import get_dataloader, save_checkpoint
@@ -19,7 +20,15 @@ SAVE_DIR = "./progress_celeb"
 def main(args):
     print("Loading model...")
     # model = UNet()
-    model = UNetModel(3, 32, 3, 3, 4, 32, 0.3)
+    model = UNetModel(
+        in_channels=3,
+        model_channel=16,
+        out_channels=3,
+        n_resblocks=3,
+        n_heads=4,
+        groups=16,
+        dropout=0.3,
+    )
     model.half()
     model.to(device)
     print("Model loaded!")
@@ -68,9 +77,7 @@ def main(args):
             print("Checkpoint reached")
             sample_images = diffusion.sample(model, n=64)
             os.makedirs(SAVE_DIR, exist_ok=True)
-            save_image(
-                sample_images, os.path.join(SAVE_DIR, f"updates_{updates}.jpg")
-            )
+            save_image(sample_images, os.path.join(SAVE_DIR, f"updates_{updates}.jpg"))
 
             save_checkpoint(
                 model.state_dict(),
