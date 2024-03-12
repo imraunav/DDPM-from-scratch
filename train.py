@@ -77,7 +77,9 @@ def main(args):
             # print(f"Loss = {losses[-1]}")
         if epoch % 10 == 0:
             print("Checkpoint reached")
-            sample_images = diffusion.sample(model, n=64)
+            sample_images = diffusion.sample(
+                model, n=64, img_size=args.image_size, device=accelerator.device
+            )
             os.makedirs(SAVE_DIR, exist_ok=True)
             save_image(sample_images, os.path.join(SAVE_DIR, f"updates_{updates}.jpg"))
 

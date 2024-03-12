@@ -48,7 +48,9 @@ class Diffusion(nn.Module):
         return torch.randint(low=1, high=self.noise_step, size=(n,))
 
     @torch.no_grad()
-    def sample(self, model, n, img_size=None, y=None):
+    def sample(self, model, n, img_size=None, y=None, device=None):
+        if device is None:
+            device = "cpu"
 
         if img_size is None:
             img_size = self.img_size
