@@ -62,10 +62,15 @@ class Diffusion(nn.Module):
             alpha = self.alpha[t][:, None, None, None]
             alpha_hat = self.alpha_hat[t][:, None, None, None]
             beta = self.beta[t][:, None, None, None]
+
+            alpha = alpha.to(device)
+            alpha_hat = alpha_hat.to(device)
+            beta = beta.to(device)
+
             if i > 1:
-                noise = torch.randn_like(x)
+                noise = torch.randn_like(x, device=device)
             else:
-                noise = torch.zeros_like(x)
+                noise = torch.zeros_like(x, device=device)
             x = (
                 1
                 / torch.sqrt(alpha)
