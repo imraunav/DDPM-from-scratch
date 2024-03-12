@@ -88,6 +88,7 @@ def main(args):
                 optimizer.state_dict(),
                 # epoch + 1,
                 filename="checkpoint_celeb.pt",
+                accelerator=accelerator,
             )
 
 
