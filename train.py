@@ -12,7 +12,7 @@ from nn import UNetModel
 from utils import get_dataloader, save_checkpoint
 
 accelerator = Accelerator()
-device = torch.device("cuda")
+# device = torch.device("cuda")
 
 SAVE_DIR = "./progress_celeb"
 
@@ -30,13 +30,13 @@ def main(args):
         dropout=0.3,
     )
     # model.half()
-    model.to(device)
+    # model.to(device)
     print("Model loaded!")
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
     print("Building diffusion class...")
-    diffusion = Diffusion(img_size=args.image_size, device=device)
+    diffusion = Diffusion(img_size=args.image_size)
     print("Done!")
-    crit = torch.nn.MSELoss().to(device)
+    crit = torch.nn.MSELoss()
     print("Fetching dataloader...")
     dataloader = get_dataloader(args)
     print("Done!")
@@ -51,10 +51,8 @@ def main(args):
         for images, labels in pbar:
             model.train()
             # images = images.to(torch.half)
-            images = images.to(device)
-            t = diffusion.sample_timesteps(images.size(0)).to(
-                device
-            )  # last batch can be uneven
+            # images = images.to(device)
+            t = diffusion.sample_timesteps(images.size(0))  # last batch can be uneven
             x_t, noise = diffusion.noise_image(images, t)
             # with torch.cuda.amp.autocast(enabled=True, dtype=torch.float16):
             predicted_noise = model(x_t, t)
