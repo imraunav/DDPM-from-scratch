@@ -53,6 +53,7 @@ def save_checkpoint(
     epoch=None,
     losses=None,
     filename="checkpoint.pt",
+    accelerator=None,
 ):
     state = {
         "model_state": model_state,
@@ -64,4 +65,7 @@ def save_checkpoint(
     if losses is not None:
         state["losses"] = losses
 
-    torch.save(state, filename)
+    if accelarator is None:
+        torch.save(state, filename)
+    else:
+        accelerator.save(state, filename)

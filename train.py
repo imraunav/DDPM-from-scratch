@@ -18,7 +18,7 @@ SAVE_DIR = "./progress_celeb"
 
 
 def main(args):
-    print("Loading model...")
+    accelerator.print("Loading model...")
     # model = UNet()
     model = UNetModel(
         in_channels=3,
@@ -31,15 +31,15 @@ def main(args):
     )
     # model.half()
     # model.to(device)
-    print("Model loaded!")
+    accelerator.print("Model loaded!")
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
-    print("Building diffusion class...")
+    accelerator.print("Building diffusion class...")
     diffusion = Diffusion(img_size=args.image_size)
-    print("Done!")
+    accelerator.print("Done!")
     crit = torch.nn.MSELoss()
-    print("Fetching dataloader...")
+    accelerator.print("Fetching dataloader...")
     dataloader = get_dataloader(args)
-    print("Done!")
+    accelerator.print("Done!")
 
     n_updates = 0
     losses = []
@@ -49,7 +49,7 @@ def main(args):
         model, diffusion, optimizer, dataloader
     )
     for epoch in range(args.max_epoch):
-        # print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
+        # accelerator.print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
         pbar = tqdm(dataloader, desc=f"Epoch {epoch}/{args.max_epoch} : ")
         for images, labels in pbar:
             model.train()
@@ -74,9 +74,9 @@ def main(args):
             # pbar.set_postfix(loss=loss.item())
 
             # lossess.append(running_loss / len(dataloader))
-            # print(f"Loss = {losses[-1]}")
+            # accelerator.print(f"Loss = {losses[-1]}")
         if epoch % 10 == 0:
-            print("Checkpoint reached")
+            accelerator.print("Checkpoint reached")
             sample_images = diffusion.sample(
                 model, n=64, img_size=args.image_size, device=accelerator.device
             )
