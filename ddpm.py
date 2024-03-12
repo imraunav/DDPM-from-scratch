@@ -1,26 +1,27 @@
 import os
 import torch
 from tqdm import tqdm
+from torch import nn
 
 
-class Diffusion:
+class Diffusion(nn.Module):
     def __init__(
         self,
         noise_step=1000,
         beta_start=1e-4,
         beta_end=0.02,
         img_size=256,
-        device="cuda",
         channel=3,
     ):
+        super().__init__()
         self.noise_step = noise_step
         self.beta_start = beta_start
         self.beta_end = beta_end
         self.img_size = img_size
-        self.device = device
+        # self.device = device
         self.channel = channel
 
-        self.beta = self.prepare_noise_schedule().to(device)
+        self.beta = self.prepare_noise_schedule()
         self.alpha = 1 - self.beta
         self.alpha_hat = torch.cumprod(self.alpha, dim=0)
 
@@ -29,7 +30,6 @@ class Diffusion:
             start=self.beta_start,
             end=self.beta_end,
             steps=self.noise_step,
-            device=self.device,
         )
 
     def noise_image(self, x, t):
@@ -37,7 +37,7 @@ class Diffusion:
         sqrt_one_minus_alpha_hat = torch.sqrt(1 - self.alpha_hat[t])[
             :, None, None, None
         ]
-        noise = torch.randn_like(x, device=self.device)
+        noise = torch.randn_like(x)
         return sqrt_alpha_hat * x + sqrt_one_minus_alpha_hat * noise, noise
 
     def sample_timesteps(self, n):
@@ -49,11 +49,9 @@ class Diffusion:
         if img_size is None:
             img_size = self.img_size
         model.eval()
-        x = torch.randn(
-            (n, self.channel, img_size, img_size), device=self.device
-        )  # [N, C, H, W]
+        x = torch.randn((n, self.channel, img_size, img_size))  # [N, C, H, W]
         for i in reversed(range(1, self.noise_step)):
-            t = torch.tensor([i] * n, dtype=torch.long).to(self.device)
+            t = torch.tensor([i] * n, dtype=torch.long)
             predicted_noise = model(x, t)
             alpha = self.alpha[t][:, None, None, None]
             alpha_hat = self.alpha_hat[t][:, None, None, None]

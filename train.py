@@ -45,6 +45,9 @@ def main(args):
     losses = []
     updates = 0
     # scaler = torch.cuda.amp.GradScaler()
+    model, diffusion, optimizer, dataloader = accelerator.prepare(
+        model, diffusion, optimizer, dataloader
+    )
     for epoch in range(args.max_epoch):
         # print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
         pbar = tqdm(dataloader, desc=f"Epoch {epoch}/{args.max_epoch} : ")
@@ -59,7 +62,8 @@ def main(args):
             loss = crit(predicted_noise, noise)
 
             optimizer.zero_grad()
-            loss.backward()
+            # loss.backward()
+            accelerator.backward(loss)
             optimizer.step()
             # scaler.scale(loss).backward()
             # scaler.step(optimizer)
