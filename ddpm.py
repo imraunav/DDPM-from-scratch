@@ -71,6 +71,15 @@ class Diffusion(nn.Module):
                 noise = torch.randn_like(x, device=device)
             else:
                 noise = torch.zeros_like(x, device=device)
+            # Debug
+            print(
+                alpha.device,
+                alpha_hat.device,
+                beta.device,
+                noise.device,
+                predicted_noise.device,
+                x.device,
+            )
             x = (
                 1
                 / torch.sqrt(alpha)
