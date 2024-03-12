@@ -55,7 +55,9 @@ class Diffusion(nn.Module):
         if img_size is None:
             img_size = self.img_size
         model.eval()
-        x = torch.randn((n, self.channel, img_size, img_size))  # [N, C, H, W]
+        x = torch.randn(
+            (n, self.channel, img_size, img_size), device=device
+        )  # [N, C, H, W]
         for i in reversed(range(1, self.noise_step)):
             t = torch.tensor([i] * n, dtype=torch.long)
             predicted_noise = model(x, t)
@@ -72,14 +74,14 @@ class Diffusion(nn.Module):
             else:
                 noise = torch.zeros_like(x, device=device)
             # Debug
-            print(
-                alpha.device,
-                alpha_hat.device,
-                beta.device,
-                noise.device,
-                predicted_noise.device,
-                x.device,
-            )
+            # print(
+            #     alpha.device,
+            #     alpha_hat.device,
+            #     beta.device,
+            #     noise.device,
+            #     predicted_noise.device,
+            #     x.device,
+            # )
             x = (
                 1
                 / torch.sqrt(alpha)
