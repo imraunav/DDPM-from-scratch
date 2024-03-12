@@ -18,7 +18,7 @@ class Diffusion(nn.Module):
         self.beta_start = beta_start
         self.beta_end = beta_end
         self.img_size = img_size
-        # self.device = device
+        # self.device = "cuda" # device
         self.channel = channel
 
         self.beta = self.prepare_noise_schedule()
@@ -37,7 +37,11 @@ class Diffusion(nn.Module):
         sqrt_one_minus_alpha_hat = torch.sqrt(1 - self.alpha_hat[t])[
             :, None, None, None
         ]
-        noise = torch.randn_like(x)
+
+        sqrt_alpha_hat = sqrt_alpha_hat.to(x.device)
+        sqrt_one_minus_alpha_hat = sqrt_one_minus_alpha_hat.to(x.device)
+        noise = torch.randn_like(x, device=x.device)
+
         return sqrt_alpha_hat * x + sqrt_one_minus_alpha_hat * noise, noise
 
     def sample_timesteps(self, n):
