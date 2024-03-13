@@ -29,10 +29,15 @@ def main(args):
         groups=16,
         dropout=0.3,
     )
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
+    if args.load_checkpoint != "":
+        state = torch.load(args.load_checkpoint)
+        model.load_state_dict(state["model_state"])
+        optimizer.load_state_dict(state["optim_state"])
+        start = 60
     # model.half()
     # model.to(device)
     accelerator.print("Model loaded!")
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
     accelerator.print("Building diffusion class...")
     diffusion = Diffusion(img_size=args.image_size)
     accelerator.print("Done!")
@@ -48,7 +53,7 @@ def main(args):
     model, diffusion, optimizer, dataloader = accelerator.prepare(
         model, diffusion, optimizer, dataloader
     )
-    for epoch in range(args.max_epoch):
+    for epoch in range(start+1, args.max_epoch):
         # accelerator.print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
         pbar = tqdm(
             dataloader,
@@ -122,6 +127,12 @@ def get_args():
     #     default=100,
     #     help="Max amount of updates to apply to the model",
     # )
+    parser.add_argument(
+        "--load_checkpoint",
+        type=str,
+        help="load checkpoint",
+        default="",
+    )
     parser.add_argument(
         "--image_size",
         type=int,
