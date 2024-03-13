@@ -86,14 +86,15 @@ def main(args):
             )
             os.makedirs(SAVE_DIR, exist_ok=True)
             save_image(sample_images, os.path.join(SAVE_DIR, f"updates_{updates}.jpg"))
-            accelerator.save_state("checkpoint_celeb.pt")
-            # save_checkpoint(
-            #     model.state_dict(),
-            #     optimizer.state_dict(),
-            #     # epoch + 1,
-            #     filename="checkpoint_celeb.pt",
-            #     accelerator=accelerator,
-            # )
+            # accelerator.save_state("checkpoint_celeb.pt")
+            if accelerator.is_local_main_process:
+                save_checkpoint(
+                    model.state_dict(),
+                    optimizer.state_dict(),
+                    epoch + 1,
+                    filename="checkpoint_celeb.pt",
+                    # accelerator=accelerator,
+                )
 
 
 def get_args():
