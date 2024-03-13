@@ -50,7 +50,11 @@ def main(args):
     )
     for epoch in range(args.max_epoch):
         # accelerator.print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
-        pbar = tqdm(dataloader, desc=f"Epoch {epoch}/{args.max_epoch} : ")
+        pbar = tqdm(
+            dataloader,
+            desc=f"Epoch {epoch}/{args.max_epoch} : ",
+            disable=not accelerator.is_local_main_process,
+        )
         for images, labels in pbar:
             model.train()
             # images = images.to(torch.half)
