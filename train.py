@@ -30,11 +30,6 @@ def main(args):
         dropout=0.3,
     )
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
-    if args.load_checkpoint != "":
-        state = torch.load(args.load_checkpoint)
-        model.load_state_dict(state["model_state"])
-        optimizer.load_state_dict(state["optim_state"])
-        start = 60
     # model.half()
     # model.to(device)
     accelerator.print("Model loaded!")
@@ -45,7 +40,7 @@ def main(args):
     accelerator.print("Fetching dataloader...")
     dataloader = get_dataloader(args)
     accelerator.print("Done!")
-
+    start=0
     n_updates = 0
     losses = []
     updates = 0
@@ -91,14 +86,14 @@ def main(args):
             )
             os.makedirs(SAVE_DIR, exist_ok=True)
             save_image(sample_images, os.path.join(SAVE_DIR, f"updates_{updates}.jpg"))
-
-            save_checkpoint(
-                model.state_dict(),
-                optimizer.state_dict(),
-                # epoch + 1,
-                filename="checkpoint_celeb.pt",
-                accelerator=accelerator,
-            )
+            accelerator.save_state("checkpoint_celeb.pt")
+            # save_checkpoint(
+            #     model.state_dict(),
+            #     optimizer.state_dict(),
+            #     # epoch + 1,
+            #     filename="checkpoint_celeb.pt",
+            #     accelerator=accelerator,
+            # )
 
 
 def get_args():
