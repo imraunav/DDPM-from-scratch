@@ -84,7 +84,8 @@ def main(args):
 
             # lossess.append(running_loss / len(dataloader))
             # accelerator.print(f"Loss = {losses[-1]}")
-        if epoch % 10 == 0:
+        accelerator.wait_for_everyone()
+        if epoch % 10 == 0 and accelerator.is_local_main_process:
             accelerator.print("Checkpoint reached")
             sample_images = diffusion.sample(
                 model, n=64, img_size=args.image_size, device=accelerator.device
@@ -92,14 +93,13 @@ def main(args):
             os.makedirs(SAVE_DIR, exist_ok=True)
             save_image(sample_images, os.path.join(SAVE_DIR, f"updates_{updates}.jpg"))
             # accelerator.save_state("checkpoint_celeb.pt")
-            if accelerator.is_local_main_process:
-                save_checkpoint(
-                    model.state_dict(),
-                    optimizer.state_dict(),
-                    epoch + 1,
-                    filename="checkpoint_celeb.pt",
-                    # accelerator=accelerator,
-                )
+            save_checkpoint(
+                model.state_dict(),
+                optimizer.state_dict(),
+                epoch + 1,
+                filename="checkpoint_celeb.pt",
+                # accelerator=accelerator,
+            )
 
 
 def get_args():
