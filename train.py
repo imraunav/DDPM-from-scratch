@@ -25,12 +25,15 @@ def main(args):
         model_channel=32,
         out_channels=3,
         n_resblocks=2,
-        n_heads=4,
+        n_heads=8,
         groups=32,
         dropout=0.5,
+        channel_mult=(1, 2, 2, 4, 8),
     )
     optimizer = torch.optim.AdamW(
-        model.parameters(), lr=args.learning_rate, betas=(0.5, 0.99)
+        model.parameters(),
+        lr=args.learning_rate,
+        betas=(0.5, 0.99),
     )
     # model.half()
     # model.to(device)
@@ -141,5 +144,6 @@ def get_args():
 
 
 if __name__ == "__main__":
+    torch.cuda.manual_seed_all(0)
     args = get_args()
     main(args)
