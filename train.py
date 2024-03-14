@@ -22,14 +22,16 @@ def main(args):
     # model = UNet()
     model = UNetModel(
         in_channels=3,
-        model_channel=16,
+        model_channel=32,
         out_channels=3,
-        n_resblocks=3,
+        n_resblocks=2,
         n_heads=4,
-        groups=16,
-        dropout=0.3,
+        groups=32,
+        dropout=0.5,
     )
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
+    optimizer = torch.optim.AdamW(
+        model.parameters(), lr=args.learning_rate, betas=(0.5, 0.99)
+    )
     # model.half()
     # model.to(device)
     accelerator.print("Model loaded!")
@@ -40,7 +42,7 @@ def main(args):
     accelerator.print("Fetching dataloader...")
     dataloader = get_dataloader(args)
     accelerator.print("Done!")
-    start=0
+    start = 0
     n_updates = 0
     losses = []
     updates = 0
@@ -48,7 +50,7 @@ def main(args):
     model, diffusion, optimizer, dataloader = accelerator.prepare(
         model, diffusion, optimizer, dataloader
     )
-    for epoch in range(start+1, args.max_epoch):
+    for epoch in range(start + 1, args.max_epoch):
         # accelerator.print(f"Epoch {epoch}/{args.max_epoch} : ", end="")
         pbar = tqdm(
             dataloader,
