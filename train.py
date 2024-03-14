@@ -28,7 +28,7 @@ def main(args):
         n_heads=8,
         groups=32,
         dropout=0.5,
-        channel_mult=(1, 2, 2, 4, 8),
+        channel_mult=(1, 8, 16),
     )
     optimizer = torch.optim.AdamW(
         model.parameters(),
