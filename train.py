@@ -22,13 +22,12 @@ def main(args):
     # model = UNet()
     model = UNetModel(
         in_channels=3,
-        model_channel=128,
+        model_channel=16,
         out_channels=3,
-        n_resblocks=2,
+        n_resblocks=3,
         n_heads=4,
         groups=16,
         dropout=0.3,
-        channel_mult=(1, 1, 2, 2, 4, 4)
     )
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
     # model.half()
